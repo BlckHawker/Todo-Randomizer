@@ -11,8 +11,12 @@ def make_button(text: str, master, side: str | None = None, *, padx: int | None 
     return button
 
 def organize_saved_categories():
-    saved_categories.sort()
+    saved_categories_names.sort()
 
 # todo make it so saved_categories loads from a local json file
-saved_categories = ['b', 'c', 'd']
+# todo make this a dictionary with the key being the name and the value being the Category object
+saved_categories_names = ['b', 'c', 'd']
 # saved_categories = []
+
+# keeps track of the frames throughout the application
+frame_list = []

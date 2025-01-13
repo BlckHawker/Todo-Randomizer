@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from functools import partial
 import utils
-
+from CategoryFrame import CategoryFrame;
 # The home page that will show the categories
 class HomeFrame(tk.Frame):
     def __init__(self, parent):
@@ -14,8 +14,17 @@ class HomeFrame(tk.Frame):
 
     # When this button is clicked, delete the category from the list
     def delete_category(self, category: str):
-        utils.saved_categories.remove(category)
+        utils.saved_categories_names.remove(category)
         self.create_frame_categories()
+
+        #remove the CategoryFrame
+        print(f'before deletion {len(utils.frame_list)}')
+        for frame in utils.frame_list:
+            if (isinstance(frame, CategoryFrame) and frame.categoryName == category):
+                frame_to_remove = frame
+                utils.frame_list.remove(frame_to_remove)
+                break
+        print(f'after deletion {len(utils.frame_list)}')
 
     def select_category(self, category: str):
         print(f'Select category "{category}"')
@@ -33,13 +42,13 @@ class HomeFrame(tk.Frame):
 
         #if there are no categories, make a label to show that
         #otherwise, list the categories with their own label
-        if(len(utils.saved_categories) == 0):
+        if(len(utils.saved_categories_names) == 0):
             category_frame = ttk.Frame(master=self)
             category_frame.pack()
             utils.make_label(text='N/A', master=category_frame, side='left', padx=10)
         else:
             utils.organize_saved_categories()
-            for category in utils.saved_categories:
+            for category in utils.saved_categories_names:
                 category_frame = ttk.Frame(master=self)
                 category_frame.pack()
                 utils.make_label(category, category_frame, side='left', padx=10)
@@ -79,12 +88,12 @@ class HomeFrame(tk.Frame):
         if(input == ""):
             warningText = "input can't be empty"
         # input can't already be in saved_categories
-        elif(any(category.upper() == input.upper() for category in utils.saved_categories)):
+        elif(any(category.upper() == input.upper() for category in utils.saved_categories_names)):
             warningText = f"\"{input}\" is already a category"
 
         # add the new category to the list if valid
         if(warningText == ""):
-            utils.saved_categories.append(input)
+            utils.saved_categories_names.append(input)
             warningText = f"Added \"{input}\" as new category"
             warning_label.config(foreground="green")
             self.create_frame_categories()
