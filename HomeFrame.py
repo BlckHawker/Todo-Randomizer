@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from functools import partial
 import utils
-from CategoryFrame import CategoryFrame;
+from CategoryFrame import CategoryFrame
+from Task import Task
 # The home page that will show the categories
 class HomeFrame(tk.Frame):
     def __init__(self, parent):
@@ -13,13 +14,13 @@ class HomeFrame(tk.Frame):
         
 
     # When this button is clicked, delete the category from the list
-    def delete_category(self, category: str):
-        utils.saved_categories_names.remove(category)
+    def delete_category(self, category_name: str):
+        del utils.saved_categories[category_name]
         self.create_frame_categories()
 
         #remove the CategoryFrame
         for frame in utils.frame_list:
-            if (isinstance(frame, CategoryFrame) and frame.category_name == category):
+            if (isinstance(frame, CategoryFrame) and frame.category_name == category_name):
                 frame_to_remove = frame
                 utils.frame_list.remove(frame_to_remove)
                 break
@@ -30,7 +31,7 @@ class HomeFrame(tk.Frame):
         utils.change_window(desired_frame)
 
     def create_frame_categories(self):
-        # forget all children if they exist (except any )
+        # forget all children if they exist (except any pop ups)
         for widget in self.winfo_children():
             if(not isinstance(widget, tk.Toplevel)):
                 widget.destroy()
@@ -41,18 +42,18 @@ class HomeFrame(tk.Frame):
 
         #if there are no categories, make a label to show that
         #otherwise, list the categories with their own label
-        if(len(utils.saved_categories_names) == 0):
+        if(len(utils.saved_categories) == 0):
             category_frame = ttk.Frame(master=self)
             category_frame.pack()
             utils.make_label(text='N/A', master=category_frame, side='left', padx=10)
         else:
             utils.organize_saved_categories()
-            for category in utils.saved_categories_names:
+            for category_name in utils.saved_categories:
                 category_frame = ttk.Frame(master=self)
                 category_frame.pack()
-                utils.make_label(category, category_frame, side='left', padx=10)
-                utils.make_button('Select', category_frame, side='left', padx=10, command=partial(self.select_category, category))
-                utils.make_button('Delete', category_frame, side='left', padx=10, command=partial(self.delete_category, category))
+                utils.make_label(category_name, category_frame, side='left', padx=10)
+                utils.make_button('Select', category_frame, side='left', padx=10, command=partial(self.select_category, category_name))
+                utils.make_button('Delete', category_frame, side='left', padx=10, command=partial(self.delete_category, category_name))
 
         utils.make_button('Add Category', self, command=self.add_category_button_press)
         self.pack()
@@ -87,12 +88,12 @@ class HomeFrame(tk.Frame):
         if(input == ""):
             warningText = "input can't be empty"
         # input can't already be in saved_categories
-        elif(any(category.upper() == input.upper() for category in utils.saved_categories_names)):
+        elif(any(category.upper() == input.upper() for category in utils.saved_categories)):
             warningText = f"\"{input}\" is already a category"
 
         # add the new category to the list if valid
         if(warningText == ""):
-            utils.saved_categories_names.append(input)
+            utils.saved_categories.update({input: Task(input)})
             warningText = f"Added \"{input}\" as new category"
             warning_label.config(foreground="green")
             self.create_frame_categories()

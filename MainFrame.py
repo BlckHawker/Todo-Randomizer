@@ -12,13 +12,12 @@ class MainFrame():
         self.homeFrame = HomeFrame(mainframe)
         
         utils.active_frame_index = 0
-        print(utils.active_frame_index)
         # the list of the frames to show to the user
         utils.frame_list = [self.homeFrame]
 
         # add the categories 
         # todo this is where categories would be loaded from the json
-        for name in utils.saved_categories_names:
+        for name in utils.saved_categories:
             utils.frame_list.append(CategoryFrame(name, mainframe))
 
         # foreach the frames in the list, forget the one that is currently not in the list
