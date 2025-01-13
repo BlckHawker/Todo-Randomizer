@@ -19,14 +19,15 @@ class HomeFrame(tk.Frame):
 
         #remove the CategoryFrame
         for frame in utils.frame_list:
-            if (isinstance(frame, CategoryFrame) and frame.categoryName == category):
+            if (isinstance(frame, CategoryFrame) and frame.category_name == category):
                 frame_to_remove = frame
                 utils.frame_list.remove(frame_to_remove)
                 break
 
-    def select_category(self, category: str):
-        print(f'Select category "{category}"')
         # When this button is clicked, open a window to show the new category window
+    def select_category(self, category: str):
+        desired_frame = [frame for frame in utils.frame_list if isinstance(frame, CategoryFrame) and frame.category_name ==  category][0]
+        utils.change_window(desired_frame)
 
     def create_frame_categories(self):
         # forget all children if they exist (except any )
@@ -95,15 +96,12 @@ class HomeFrame(tk.Frame):
             warningText = f"Added \"{input}\" as new category"
             warning_label.config(foreground="green")
             self.create_frame_categories()
-            # todo add CategoryFame
             category_frame = CategoryFrame(input, self.parent)
             utils.frame_list.append(category_frame)
             category_frame.forget()
 
-
         else:
             warning_label.config(foreground="red")
         
-
         warning_label.pack()
         warning_label.config(text = warningText)

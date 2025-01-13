@@ -10,8 +10,9 @@ class MainFrame():
         mainframe.pack()
 
         self.homeFrame = HomeFrame(mainframe)
-        # the index of the frame that is currently shown to the user
-        self.activeFrameIndex = 0
+        
+        utils.active_frame_index = 0
+        print(utils.active_frame_index)
         # the list of the frames to show to the user
         utils.frame_list = [self.homeFrame]
 
@@ -20,25 +21,12 @@ class MainFrame():
         for name in utils.saved_categories_names:
             utils.frame_list.append(CategoryFrame(name, mainframe))
 
-        print(len(utils.frame_list))
-
         # foreach the frames in the list, forget the one that is currently not in the list
         for frame in utils.frame_list:
             if(frame != self.homeFrame):
                 frame.forget()
 
-    def change_window(self, frame: tk.Frame):
-        # make it so the current frame is disabled
-        utils.frame_list[self.activeFrameIndex].forget()
-
-        #todo enable to new frame
-
-        #todo change the active frame index
-
-    def remove_category_frame(self, name):
-        pass
-        
-
+    
     
 
 #set up window
