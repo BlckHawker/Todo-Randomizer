@@ -18,13 +18,11 @@ class HomeFrame(tk.Frame):
         self.create_frame_categories()
 
         #remove the CategoryFrame
-        print(f'before deletion {len(utils.frame_list)}')
         for frame in utils.frame_list:
             if (isinstance(frame, CategoryFrame) and frame.categoryName == category):
                 frame_to_remove = frame
                 utils.frame_list.remove(frame_to_remove)
                 break
-        print(f'after deletion {len(utils.frame_list)}')
 
     def select_category(self, category: str):
         print(f'Select category "{category}"')
@@ -97,6 +95,11 @@ class HomeFrame(tk.Frame):
             warningText = f"Added \"{input}\" as new category"
             warning_label.config(foreground="green")
             self.create_frame_categories()
+            # todo add CategoryFame
+            category_frame = CategoryFrame(input, self.parent)
+            utils.frame_list.append(category_frame)
+            category_frame.forget()
+
 
         else:
             warning_label.config(foreground="red")
