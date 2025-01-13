@@ -12,8 +12,10 @@ class HomeFrame(tk.Frame):
         self.create_frame_categories()
         
 
+    # When this button is clicked, delete the category from the list
     def delete_category(self, category: str):
-        print(f'Deleted category "{category}"')
+        utils.saved_categories.remove(category)
+        self.create_frame_categories()
 
     def select_category(self, category: str):
         print(f'Select category "{category}"')

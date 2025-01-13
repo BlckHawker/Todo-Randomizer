@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from  HomeFrame import HomeFrame
-# The window created to show a GUI to a use
+# The window created to show a Frame to a use
 class Window():
     def __init__(self, master):
         mainframe = tk.Frame(master)
@@ -17,13 +17,11 @@ class Window():
             if(ix != self.activeFrameIndex):
                 self.frameList[ix].forget()
 
-
 #set up window
 
 root = tk.Tk()
 window = Window(root)
 root.title('Todo Randomizer')
-
 
 #run
 root.mainloop()
