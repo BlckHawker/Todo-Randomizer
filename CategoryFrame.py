@@ -140,12 +140,11 @@ class CategoryFrame(tk.Frame):
             utils.make_label(text="N/A", master=self)
         else:
             # show/hide complete tasks button
-            # todo give this functionality
-            utils.make_button(text= "Show" if self.show_complete_tasks else "Hide", master=self)
+            utils.make_button(text= "Show" if self.show_complete_tasks else "Hide", master=self, command=partial(self.toggle_complete_tasks))
             if(self.show_complete_tasks):
                 for task in self.category.complete_tasks:
                     utils.make_label(text=task.name, master=self)
-                    # todo give the option to delete a complete task
+                    # todo give the option to delete a complete task (give this functionality)
                     utils.make_button(text="Remove task", master=self)
                     utils.make_label(text=f"Start Date: {task.get_start_date()}", master=self)
                     utils.make_label(text=f"End Date: {task.get_end_date()}", master=self)
@@ -184,4 +183,8 @@ class CategoryFrame(tk.Frame):
 
     def set_as_complete(self):
         self.category.add_task_as_complete()
+        self.update_frame(True)
+    
+    def toggle_complete_tasks(self):
+        self.show_complete_tasks = not self.show_complete_tasks
         self.update_frame(True)
