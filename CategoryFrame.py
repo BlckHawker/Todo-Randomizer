@@ -39,13 +39,21 @@ class CategoryFrame(tk.Frame):
         # input can't be the name of the current task
         elif(self.category.current_task is not None and self.category.current_task.name.upper() == input.upper()):
             warningText = "input can't be the name of the current task"
+
         
-        # input can't be the name of a task in the back log
+        
         else:
+            # input can't be the name of a task in the backlog
             for task in self.category.backlogged_tasks:
                 if(task.name.upper() == input.upper()):
                     warningText = "input can't be the name of a task in the backlog"
                     break
+            # input can't be the name of a task in the complete task list
+            if(warningText == ""):
+               for task in self.category.complete_tasks:
+                if(task.name.upper() == input.upper()):
+                    warningText = "input can't be the name of a task in the complete task list"
+                    break 
 
         # add the task to the back log of the task
         if(warningText == ""):
@@ -59,7 +67,6 @@ class CategoryFrame(tk.Frame):
         warning_label.pack()
         warning_label.config(text = warningText)
         self.update_frame(True)
-        self.show_frame()
 
     def update_frame(self, show_frame = False):
         # forget all children if they exist (except any pop ups)
@@ -81,10 +88,9 @@ class CategoryFrame(tk.Frame):
 
         # Set current task as complete button
         # todo give this functionality
-        utils.make_button(text='Set as complete', master=b_frame, side='left')
+        utils.make_button(text='Set as complete', master=b_frame, side='left', command=partial(self.set_as_complete))
 
         # remove current task as current task
-        # todo give this functionality
         utils.make_button(text='Remove as current task', master=b_frame, side='left', command=partial(self.remove_as_current_task, self.category.current_task))
 
         # if the current_task is not none, make the buttons visible
@@ -114,7 +120,6 @@ class CategoryFrame(tk.Frame):
 
         button_frame = ttk.Frame(self)
         button_frame.pack()
-        # todo give this functionality
         # randomly assign task button
         randomly_assign_task_button = utils.make_button(text='Randomly assign current task', master=button_frame, side='left', command=partial(self.randomly_assign_current_task))
 
@@ -139,7 +144,6 @@ class CategoryFrame(tk.Frame):
     def set_as_current_task(self, task):
         self.category.set_task_as_current_task(task)
         self.update_frame(True)
-        self.show_frame()
 
     def remove_as_current_task(self, task):
         # set the current task to None
@@ -148,7 +152,6 @@ class CategoryFrame(tk.Frame):
         # add the old current task to the backlog
         self.category.add_task_to_backlog(task)
         self.update_frame(True)
-        self.show_frame()
     
     def randomly_assign_current_task(self):
         # randomly get a task from the backlog
@@ -157,4 +160,7 @@ class CategoryFrame(tk.Frame):
         # set the random task as the current task
         self.category.set_task_as_current_task(new_current_task)
         self.update_frame(True)
-        self.show_frame()
+
+    def set_as_complete(self):
+        self.category.add_task_as_complete()
+        self.update_frame(True)

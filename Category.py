@@ -19,6 +19,10 @@ class Category():
     def current_task(self):
         return self._current_task
     
+    @property 
+    def complete_tasks(self):
+        return self._complete_tasks
+    
     @current_task.setter
     def current_task(self, new_current_task):
         self._current_task = new_current_task
@@ -32,13 +36,17 @@ class Category():
         return self._name
     
     def add_task_to_backlog(self, new_task: Task):
-        # verify the the new task does not have the same name as the current task 
+        # verify the new task does not have the same name as the current task 
         error_str = f'Cannot add a task with the name \"{new_task.name}\" in the category \"{self._name}\" as a task with that name already exists'
-        if(self.current_task is not None and new_task.name == self.current_task.name):
+        if(self.current_task is not None and new_task.name.upper() == self.current_task.name.upper()):
             raise(Exception(error_str))
         
-        # verify the the new task does not have the same name as a task within the backlog
-        if(any(t.name == new_task.name for t in self._backlogged_tasks)):
+        # verify the new task does not have the same name as a task within the backlog
+        if(any(t.name.upper() == new_task.name.upper() for t in self._backlogged_tasks)):
+            raise(Exception(error_str))
+        
+        # verify the new task does not have the same name as a task within the backlog
+        if(any(t.name.upper() == new_task.name.upper() for t in self._complete_tasks)):
             raise(Exception(error_str))
 
         self._backlogged_tasks.append(new_task)
@@ -61,3 +69,14 @@ class Category():
 
         # remove the new current task from the backlogged tasks list
         self._backlogged_tasks.remove(new_task)
+
+    def add_task_as_complete(self):
+        # if the current task is None, throw exception
+        if(self.current_task is None):
+            raise Exception(f'The current task in the \"{self.name}\" category is None. Unable to set it as complete')
+        
+        # add the old current task to the complete list
+        self._complete_tasks.append(self.current_task)
+
+        # set the old current task to None
+        self.current_task = None
