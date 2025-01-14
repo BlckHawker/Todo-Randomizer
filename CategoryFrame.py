@@ -142,16 +142,14 @@ class CategoryFrame(tk.Frame):
             # show/hide complete tasks button
             utils.make_button(text= "Show" if self.show_complete_tasks else "Hide", master=self, command=partial(self.toggle_complete_tasks))
             if(self.show_complete_tasks):
+                # sort the completed tasks
+                self.category.complete_tasks.sort(key=lambda task: task.name)
                 for task in self.category.complete_tasks:
                     utils.make_label(text=task.name, master=self)
-                    # todo give the option to delete a complete task (give this functionality)
-                    utils.make_button(text="Remove task", master=self)
-                    utils.make_label(text=f"Start Date: {task.get_start_date()}", master=self)
-                    utils.make_label(text=f"End Date: {task.get_end_date()}", master=self)
-
-        # todo when a task is set as the current task and it doesn't have a start, give it one based on the current date
-
-        # todo when a task is set as complete, set the start date
+                    # give the option to delete a complete task
+                    utils.make_button(text="Remove task", master=self, command=partial(self.remove_complete_task, task))
+                    utils.make_label(text=f"Start Date: {task.start_date}", master=self)
+                    utils.make_label(text=f"End Date: {task.end_date}", master=self)
 
         # show the frame if asked to
         if(show_frame):
@@ -187,4 +185,8 @@ class CategoryFrame(tk.Frame):
     
     def toggle_complete_tasks(self):
         self.show_complete_tasks = not self.show_complete_tasks
+        self.update_frame(True)
+
+    def remove_complete_task(self, task):
+        self.category.remove_complete_task(task)
         self.update_frame(True)

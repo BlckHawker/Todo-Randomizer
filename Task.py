@@ -5,24 +5,30 @@ class Task():
         # The name of the task
         self._name = name
         # The date the task was started
-        self.start_date = None
+        self._start_date = None
         # The date the task was ended (if this is None, then the task has not been complete)
-        self.end_date = None
+        self._end_date = None
     
     @property
     def name(self):
         return self._name
     
-    def get_start_date(self):
-        return self.get_date(self.start_date)
+    @property
+    def start_date(self):
+        return self.get_date(self._start_date)
+    
+    @property
+    def end_date(self):
+        return self.get_date(self._end_date)
+    
+    @start_date.setter
+    def start_date(self, new_start_date):
+        self._start_date = new_start_date
+        print(f'setting start date to {new_start_date}')
 
-
-    def get_end_date(self):
-        return self.get_date(self.end_date)
+    @end_date.setter
+    def end_date(self, new_start_date):
+        self._end_date = new_start_date
 
     def get_date(self, date):
-        if(date is None):
-            return "None"
-        else:
-            # todo replace this with the date format (MM/DD/YYYY)
-            pass 
+        return "None" if date is None else date

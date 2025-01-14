@@ -1,4 +1,5 @@
 from Task import Task
+from datetime import datetime as dt
 # Category object that will hold the list of Tasks
 
 class Category():
@@ -58,6 +59,10 @@ class Category():
         if(not task_in_backlog_list):
             raise Exception(f'A task named \"{new_task.name}\" could not be found in the category named \"{self._name}\"')
 
+        # if the new task doesn't have a start, give it one based on the current date
+        if(new_task.start_date == "None"):
+            new_task.start_date = dt.today().strftime('%m-%d-%Y')
+
         # if there is a current task, add it to the back log
         if(self._current_task is not None):
             old_current_task = self._current_task
@@ -74,9 +79,18 @@ class Category():
         # if the current task is None, throw exception
         if(self.current_task is None):
             raise Exception(f'The current task in the \"{self.name}\" category is None. Unable to set it as complete')
-        
+
+        # set the end date of a task
+        self.current_task.end_date = dt.today().strftime('%m-%d-%Y')
+        print(f'end date: {self.current_task.end_date}')
+
         # add the old current task to the complete list
         self._complete_tasks.append(self.current_task)
 
+            
+
         # set the old current task to None
         self.current_task = None
+    
+    def remove_complete_task(self, task):
+        self.complete_tasks.remove(task)
