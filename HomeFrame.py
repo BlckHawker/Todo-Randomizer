@@ -3,7 +3,8 @@ from tkinter import ttk
 from functools import partial
 import utils
 from CategoryFrame import CategoryFrame
-from Task import Task
+from Category import Category
+
 # The home page that will show the categories
 class HomeFrame(tk.Frame):
     def __init__(self, parent):
@@ -61,6 +62,7 @@ class HomeFrame(tk.Frame):
         self.pack()
 
     # todo fix a bug where the submit button does not work correctly
+
     def add_category_button_press(self):
         utils.create_pop_up_with_input(master=self, label_text="Choose the name of the new category:", button_method=self.submit_category_check)
     
@@ -79,7 +81,8 @@ class HomeFrame(tk.Frame):
 
         # add the new category to the list if valid
         if(warningText == ""):
-            utils.saved_categories.update({input: Task(input)})
+
+            utils.saved_categories.update({input: Category(input)})
             warningText = f"Added \"{input}\" as new category"
             warning_label.config(foreground="green")
             self.update_frame()
