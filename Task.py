@@ -12,3 +12,17 @@ class Task():
     @property
     def name(self):
         return self._name
+    
+    def get_start_date(self):
+        return self.get_date(self.start_date)
+
+
+    def get_end_date(self):
+        return self.get_date(self.end_date)
+
+    def get_date(self, date):
+        if(date is None):
+            return "None"
+        else:
+            # todo replace this with the date format (MM/DD/YYYY)
+            pass 

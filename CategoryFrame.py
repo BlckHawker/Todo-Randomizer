@@ -10,6 +10,7 @@ class CategoryFrame(tk.Frame):
     def __init__(self, category_name, parent):
         super().__init__(parent)
         self.category = utils.saved_categories[category_name]
+        self.show_complete_tasks = True 
         self.update_frame()
 
     # shows this frame
@@ -40,8 +41,6 @@ class CategoryFrame(tk.Frame):
         elif(self.category.current_task is not None and self.category.current_task.name.upper() == input.upper()):
             warningText = "input can't be the name of the current task"
 
-        
-        
         else:
             # input can't be the name of a task in the backlog
             for task in self.category.backlogged_tasks:
@@ -87,7 +86,6 @@ class CategoryFrame(tk.Frame):
         b_frame = ttk.Frame(self)
 
         # Set current task as complete button
-        # todo give this functionality
         utils.make_button(text='Set as complete', master=b_frame, side='left', command=partial(self.set_as_complete))
 
         # remove current task as current task
@@ -132,6 +130,29 @@ class CategoryFrame(tk.Frame):
 
         # back to home button 
         utils.make_button(text="Back to Home", master=self, command=partial(self.go_to_home_frame))
+
+
+        # completed task label
+        utils.make_label(text="Completed Tasks", master=self)
+
+        # if there are no complete tasks, just show "N/A", otherwise show the tasks with the show/hide button 
+        if(len(self.category.complete_tasks) == 0):
+            utils.make_label(text="N/A", master=self)
+        else:
+            # show/hide complete tasks button
+            # todo give this functionality
+            utils.make_button(text= "Show" if self.show_complete_tasks else "Hide", master=self)
+            if(self.show_complete_tasks):
+                for task in self.category.complete_tasks:
+                    utils.make_label(text=task.name, master=self)
+                    # todo give the option to delete a complete task
+                    utils.make_button(text="Remove task", master=self)
+                    utils.make_label(text=f"Start Date: {task.get_start_date()}", master=self)
+                    utils.make_label(text=f"End Date: {task.get_end_date()}", master=self)
+
+        # todo when a task is set as the current task and it doesn't have a start, give it one based on the current date
+
+        # todo when a task is set as complete, set the start date
 
         # show the frame if asked to
         if(show_frame):
