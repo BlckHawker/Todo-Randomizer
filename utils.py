@@ -2,6 +2,7 @@ import tkinter as tk
 import utils
 from Task import Task
 from Category import Category
+from functools import partial
 
 from tkinter import ttk
 
@@ -49,7 +50,25 @@ def change_window(frame: tk.Frame):
             break
 
 
-
-
-
-
+# Helper function that creates a pop up window
+# that accepts one text input
+def create_pop_up_with_input(master, label_text, button_method):
+    top= tk.Toplevel(master=master)
+    input_frame = ttk.Frame(top)
+    input_frame.pack()
+    utils.make_label(text=label_text, master=input_frame, side= 'left')
+    entryStr = tk.StringVar()
+    entry = ttk.Entry(input_frame, textvariable=entryStr)
+    entry.pack()
+    button_frame = ttk.Frame(top)
+    button_frame.pack()
+    # make a warning text that will pop up when the user inputs an invalid thing
+    warning_label = utils.make_label(text="Warning label", master=top, foreground="red")
+    warning_label.forget()
+    utils.make_button(text="Cancel", master=button_frame, side= 'left', command=lambda: top.destroy()) # When the cancel button is clicked, close this window
+    utils.make_button(text= "Submit", master=button_frame, side= 'left', command=partial(button_method, entryStr, warning_label))
+    
+    top.transient(master=master) # set to be on top of the main window
+    top.grab_set() # hijack all commands from the master (clicks on the main window are ignored)
+    master.wait_window(master) # pause anything on the main window until this one closes
+    pass

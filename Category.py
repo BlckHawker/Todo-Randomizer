@@ -23,6 +23,10 @@ class Category():
     def backlogged_tasks(self):
         return self._backlogged_tasks
     
+    @property
+    def name(self):
+        return self._name
+    
     def add_task_to_backlog(self, new_task: Task):
         # verify the the new task does not have the same name as the current task 
         error_str = f'Cannot add a task with the name \"{new_task.name}\" in the category \"{self._name}\" as a task with that name already exists'

@@ -10,13 +10,13 @@ class HomeFrame(tk.Frame):
         super().__init__(parent)
         utils.make_label('Categories', self)
         self.parent = parent
-        self.create_frame_categories()
+        self.update_frame()
         
 
     # When this button is clicked, delete the category from the list
     def delete_category(self, category_name: str):
         del utils.saved_categories[category_name]
-        self.create_frame_categories()
+        self.update_frame()
 
         #remove the CategoryFrame
         for frame in utils.frame_list:
@@ -27,10 +27,12 @@ class HomeFrame(tk.Frame):
 
         # When this button is clicked, open a window to show the new category window
     def select_category(self, category: str):
-        desired_frame = [frame for frame in utils.frame_list if isinstance(frame, CategoryFrame) and frame.category_name ==  category][0]
+        desired_frame = [frame for frame in utils.frame_list if isinstance(frame, CategoryFrame) and frame.category.name ==  category][0]
+        if(desired_frame is None):
+            raise Exception('desired_frame not found')
         utils.change_window(desired_frame)
 
-    def create_frame_categories(self):
+    def update_frame(self):
         # forget all children if they exist (except any pop ups)
         for widget in self.winfo_children():
             if(not isinstance(widget, tk.Toplevel)):
@@ -58,26 +60,10 @@ class HomeFrame(tk.Frame):
         utils.make_button('Add Category', self, command=self.add_category_button_press)
         self.pack()
 
+    # todo fix a bug where the submit button does not work correctly
     def add_category_button_press(self):
-        top= tk.Toplevel(self)
-        input_frame = ttk.Frame(top)
-        input_frame.pack()
-        utils.make_label(text= "Choose the name of the new category:", master=input_frame, side= 'left')
-        entryStr = tk.StringVar()
-        entry = ttk.Entry(input_frame, textvariable=entryStr)
-        entry.pack()
-        button_frame = ttk.Frame(top)
-        button_frame.pack()
-        # make a warning text that will pop up when the user inputs an invalid thing
-        warning_label = utils.make_label(text="Warning label", master=top, foreground="red")
-        warning_label.forget()
-        utils.make_button(text="Cancel", master=button_frame, side= 'left', command=lambda: top.destroy()) # When the cancel button is clicked, close this window
-        utils.make_button(text= "Submit", master=button_frame, side= 'left', command=partial(self.submit_category_check, entryStr, warning_label))
-        
-        top.transient(self) # set to be on top of the main window
-        top.grab_set() # hijack all commands from the master (clicks on the main window are ignored)
-        self.wait_window(self) # pause anything on the main window until this one closes
-
+        utils.create_pop_up_with_input(master=self, label_text="Choose the name of the new category:", button_method=self.submit_category_check)
+    
     def submit_category_check(self, entryStr, warning_label):
         # get the trimmed input
         input = entryStr.get().strip()
@@ -96,7 +82,7 @@ class HomeFrame(tk.Frame):
             utils.saved_categories.update({input: Task(input)})
             warningText = f"Added \"{input}\" as new category"
             warning_label.config(foreground="green")
-            self.create_frame_categories()
+            self.update_frame()
             category_frame = CategoryFrame(input, self.parent)
             utils.frame_list.append(category_frame)
             category_frame.forget()
