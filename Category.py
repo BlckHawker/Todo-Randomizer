@@ -82,7 +82,6 @@ class Category():
 
         # set the end date of a task
         self.current_task.end_date = dt.today().strftime('%m-%d-%Y')
-        print(f'end date: {self.current_task.end_date}')
 
         # add the old current task to the complete list
         self._complete_tasks.append(self.current_task)

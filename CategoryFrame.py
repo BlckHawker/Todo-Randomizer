@@ -128,10 +128,6 @@ class CategoryFrame(tk.Frame):
         # add task button
         self.add_button = utils.make_button(text='Add Task', master=button_frame, side='left', command=partial(self.add_task))
 
-        # back to home button 
-        utils.make_button(text="Back to Home", master=self, command=partial(self.go_to_home_frame))
-
-
         # completed task label
         utils.make_label(text="Completed Tasks", master=self)
 
@@ -150,6 +146,9 @@ class CategoryFrame(tk.Frame):
                     utils.make_button(text="Remove task", master=self, command=partial(self.remove_complete_task, task))
                     utils.make_label(text=f"Start Date: {task.start_date}", master=self)
                     utils.make_label(text=f"End Date: {task.end_date}", master=self)
+
+        # back to home button 
+        utils.make_button(text="Back to Home", master=self, command=partial(self.go_to_home_frame))
 
         # show the frame if asked to
         if(show_frame):

@@ -24,7 +24,6 @@ class Task():
     @start_date.setter
     def start_date(self, new_start_date):
         self._start_date = new_start_date
-        print(f'setting start date to {new_start_date}')
 
     @end_date.setter
     def end_date(self, new_start_date):
