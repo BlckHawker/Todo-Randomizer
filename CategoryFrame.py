@@ -74,22 +74,21 @@ class CategoryFrame(tk.Frame):
         utils.make_label(f"\"{self.category.name}\" category", self)
 
         # Current task label
-        self.current_task_label = utils.make_label(text=f'Current task: {"N/A" if current_task is None else current_task}', master=self)
+        self.current_task_label = utils.make_label(text=f'Current task: {"N/A" if current_task is None else current_task.name}', master=self)
 
         b_frame = ttk.Frame(self)
 
         # Set current task as complete button
         # todo give this functionality
-        self.current_task_complete_button = utils.make_button(text='Set as complete', master=b_frame, side='left')
+        utils.make_button(text='Set as complete', master=b_frame, side='left')
 
         # remove current task as current task
         # todo give this functionality
-        utils.make_button(text='Remove as current task', master=b_frame, side='left')
+        utils.make_button(text='Remove as current task', master=b_frame, side='left', command=partial(self.remove_as_current_task, self.category.current_task))
 
-
-        # if the current_task is t none, make the button invisible
-        if(current_task is None):
-            self.current_task_complete_button.forget()
+        # if the current_task is not none, make the buttons visible
+        if(current_task is not None):
+            b_frame.pack()
 
         # backlogged tasks frame
         backlogged_tasks_frame = ttk.Frame(self)
@@ -109,10 +108,7 @@ class CategoryFrame(tk.Frame):
                 frame = ttk.Frame(master=backlogged_tasks_frame)
                 frame.pack()
                 utils.make_label(text=task.name, master=frame, side='left')
-                # todo give this functionality
-                utils.make_button(text='Set as current task', master=frame, side='left')
-
-                # todo give this functionality
+                utils.make_button(text='Set as current task', master=frame, side='left', command=partial(self.set_as_current_task, task))
                 utils.make_button(text='Delete Task', master=frame, side='left', command=partial(self.delete_task, task))
 
         button_frame = ttk.Frame(self)
@@ -129,5 +125,19 @@ class CategoryFrame(tk.Frame):
 
     def delete_task(self, task):
         self.category.backlogged_tasks.remove(task)
+        self.update_frame()
+        self.show_frame()
+
+    def set_as_current_task(self, task):
+        self.category.set_task_as_current_task(task)
+        self.update_frame()
+        self.show_frame()
+
+    def remove_as_current_task(self, task):
+        # set the current task to None
+        self.category.current_task = None
+
+        # todo add the old current task to the backlog
+        self.category.add_task_to_backlog(task)
         self.update_frame()
         self.show_frame()

@@ -19,6 +19,10 @@ class Category():
     def current_task(self):
         return self._current_task
     
+    @current_task.setter
+    def current_task(self, new_current_task):
+        self._current_task = new_current_task
+    
     @property
     def backlogged_tasks(self):
         return self._backlogged_tasks
