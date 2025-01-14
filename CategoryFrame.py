@@ -113,7 +113,7 @@ class CategoryFrame(tk.Frame):
                 utils.make_button(text='Set as current task', master=frame, side='left')
 
                 # todo give this functionality
-                utils.make_button(text='Delete Task', master=frame, side='left')
+                utils.make_button(text='Delete Task', master=frame, side='left', command=partial(self.delete_task, task))
 
         button_frame = ttk.Frame(self)
         button_frame.pack()
@@ -126,3 +126,8 @@ class CategoryFrame(tk.Frame):
 
         # back to home button 
         utils.make_button(text="Back to Home", master=self, command=partial(self.go_to_home_frame))
+
+    def delete_task(self, task):
+        self.category.backlogged_tasks.remove(task)
+        self.update_frame()
+        self.show_frame()
