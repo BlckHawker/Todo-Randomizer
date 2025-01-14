@@ -54,7 +54,6 @@ class Category():
         if(self._current_task is not None):
             old_current_task = self._current_task
             self._current_task = None
-            print(old_current_task is None)
             self.add_task_to_backlog(new_task=old_current_task)
 
         # set the new task as the current task

@@ -4,6 +4,7 @@ from functools import partial
 from Category import Category
 from Task import Task
 import utils
+import random
 
 class CategoryFrame(tk.Frame):
     def __init__(self, category_name, parent):
@@ -57,10 +58,10 @@ class CategoryFrame(tk.Frame):
         
         warning_label.pack()
         warning_label.config(text = warningText)
-        self.update_frame()
+        self.update_frame(True)
         self.show_frame()
 
-    def update_frame(self):
+    def update_frame(self, show_frame = False):
         # forget all children if they exist (except any pop ups)
         for widget in self.winfo_children():
             if(not isinstance(widget, tk.Toplevel)):
@@ -115,7 +116,11 @@ class CategoryFrame(tk.Frame):
         button_frame.pack()
         # todo give this functionality
         # randomly assign task button
-        self.randomly_assign_task_button = utils.make_button(text='Randomly assign current task', master=button_frame, side='left')
+        randomly_assign_task_button = utils.make_button(text='Randomly assign current task', master=button_frame, side='left', command=partial(self.randomly_assign_current_task))
+
+        # Do not show this button if there are no tasks in the backlog
+        if(len(self.category.backlogged_tasks) <= 0):
+            randomly_assign_task_button.forget()
         
         # add task button
         self.add_button = utils.make_button(text='Add Task', master=button_frame, side='left', command=partial(self.add_task))
@@ -123,21 +128,33 @@ class CategoryFrame(tk.Frame):
         # back to home button 
         utils.make_button(text="Back to Home", master=self, command=partial(self.go_to_home_frame))
 
+        # show the frame if asked to
+        if(show_frame):
+            self.show_frame()
+
     def delete_task(self, task):
         self.category.backlogged_tasks.remove(task)
-        self.update_frame()
-        self.show_frame()
+        self.update_frame(True)
 
     def set_as_current_task(self, task):
         self.category.set_task_as_current_task(task)
-        self.update_frame()
+        self.update_frame(True)
         self.show_frame()
 
     def remove_as_current_task(self, task):
         # set the current task to None
         self.category.current_task = None
 
-        # todo add the old current task to the backlog
+        # add the old current task to the backlog
         self.category.add_task_to_backlog(task)
-        self.update_frame()
+        self.update_frame(True)
+        self.show_frame()
+    
+    def randomly_assign_current_task(self):
+        # randomly get a task from the backlog
+        new_current_task = self.category.backlogged_tasks[random.randint(0, len(self.category.backlogged_tasks) - 1)]
+
+        # set the random task as the current task
+        self.category.set_task_as_current_task(new_current_task)
+        self.update_frame(True)
         self.show_frame()
