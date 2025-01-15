@@ -6,6 +6,7 @@ from functools import partial
 import json
 from tkinter import ttk
 import re
+from datetime import datetime as dt
 
 file_name = 'data.json'
 
@@ -82,52 +83,45 @@ def import_data():
     file = open(file_name, 'r')
     result = json.load(file)
     file.close()
-    print(result)
 
     # todo for each category, get the corresponding task
     for ix in range(len(result)):
-        name = result[ix].name
+        print(result[ix])
+        # todo put an exception here if the key 'name' doesn't exist
+        name = result[ix]['name']
 
-        # todo verify that name is a string
+        # verify that name is a string
         if(not isinstance(name, str)):
-            raise Exception("Name must be a string")
-
-        # todo check if this is needed given the first if statement
-        # todo verify that the name is not None
-        if(name is None):
-            raise Exception("Name can't be None")
+            raise Exception(f"Name of a category must be a string (given \"{name}\")")
 
 
-        # todo verify the name (trimmed) is not empty
-        if(name.strip() != ""):
+        # verify the name (trimmed) is not empty
+        if(name.strip() == ""):
             raise Exception("Name can't be an empty str")
         
 
-        # todo verity the name (trimmed, upper) is not the same as any other names
-        for saved_category in utils.saved_categories:
-            if(any(category.name.upper() == name.trim().upper() for category in saved_category)):
-                    raise Exception("Categories can't have duplicate names")        
+        # verity the name (trimmed, upper) is not the same as any other names
+        for saved_category_name in utils.saved_categories:
+            name_check = name.strip()
+            if(saved_category_name.upper() == name_check.upper()):
+                raise Exception(f"Categories can't have duplicate names (given \"{name_check}\")")        
 
         category = Category(name.strip())
 
-        {
-            "name": "n",
-            "startDate": "None",
-            "endDate": "None"
-        }
-
-
         # todo check that the current task is valid
-        current_task = result[ix].currentTask
-        if(current_task is not None):
-            valid_task(name=current_task.name, start_date=current_task.startDate, end_date=current_task.endDate, backlogged_tasks= category.backlogged_tasks, complete_tasks=category.complete_tasks, current_task=None)
-            new_current_task = Task(current_task.name.strip())
-            new_current_task.start_date = current_task.startDate
-            new_current_task.end_date = current_task.endDate
-            category.current_task = new_current_task
+        # todo put an exception if the key 'currentTask" doesn't exist
+        current_task_dict = result[ix]['currentTask']
+        if(current_task_dict is not None):
+            valid_task(task=current_task_dict, current_task=None, backlogged_tasks=[], complete_tasks=[])
+            current_task = Task(current_task_dict.name.strip())
+            current_task.start_date = current_task_dict.startDate
+            current_task.end_date = current_task_dict.endDate
+            category.current_task = current_task
 
         else:
             category.current_task = None
+
+        raise('working')
 
         # todo check that the tasks in the backlog are valid
         for backlogged_task in result[ix].backloggedTasks:
@@ -150,54 +144,69 @@ def import_data():
 
 
 # Tells if a task is valid or not
-def valid_task(name, start_date, end_date, backlogged_tasks, complete_tasks, current_task):
-    # todo the name of the task must be a string
+def valid_task(task, current_task, backlogged_tasks, complete_tasks):
+    # todo verify that the key exists in the dictionary
+    name = task['name']
+    # # todo verify that the key exists in the dictionary
+    start_date = task['startDate']
+    # # todo verify that the key exists in the dictionary
+    end_date = task['endDate']
+    # # todo verify that the key exists in the dictionary
+    # complete_tasks = task['completeTasks']
+    # # todo verify that the key exists in the dictionary
+
+    # the name of the task must be a string
     if(not isinstance(name, str)):
-        raise Exception("name must be a string")
-   
+        raise Exception(f"task name must be a string (given \"{name}\")")
 
-    # todo the name of the task can't be null 
-    # todo (this check might be redundant by the check above)
-    if(name is None):
-        raise Exception("name must be a string")
-
-    # todo the name of the task can't be empty
+    # the name of the task can't be empty
     if(name.strip() == ""):
-        raise Exception("name must be a string")
+        raise Exception(f"task name not be an empty string")
 
-    # todo start date must be a string
+    # start date must be a string
     if(not isinstance(start_date, str)):
-        raise Exception("start date must be a string")
+        raise Exception(f"start date must be a string (given \"{start_date}\")")
     
-    # todo end date must be a string
+    # end date must be a string
     if(not isinstance(end_date, str)):
-        raise Exception("end date must be a string")
+        raise Exception(f"end date must be a string (given \"{end_date}\")")
     
-    # todo the start date must either be "None" or in the format "MM-DD-YYYY"
-    if(start_date != "None" and not re.search("^\d{2}-\d{2}-\d{4}$", start_date)):
-        raise Exception("start date must either be \"None\" or in the format \"MM-DD-YYYY\"")
+    start_date_matches = re.search("^(\\d{2})-(\\d{2})-(\\d{4})$", start_date)
+    end_date_matches = re.search("^(\\d{2})-(\\d{2})-(\\d{4})$", end_date)
+    
+    # the start date must either be "None" or in the format "MM-DD-YYYY"
+    if(start_date != "None" and not start_date_matches):
+        raise Exception(f"start date must either be \"None\" or in the format \"MM-DD-YYYY\" (given \"{start_date}\")")
             
-    # todo the end date must either be "None" or in the format "MM-DD-YYYY"
-    if(end_date != "None" and not re.search("^\d{2}-\d{2}-\d{4}$", end_date)):
+    # the end date must either be "None" or in the format "MM-DD-YYYY"
+    if(end_date != "None" and not end_date_matches):
         raise Exception("end date must either be \"None\" or in the format \"MM-DD-YYYY\"")
-    
 
-    # todo if end_date is not "None" then start_date must not be "None"
+    # if end_date is not "None" then start_date must not be "None"
     if(end_date != "None" and start_date == "None"):
-        raise Exception("start date must not be \"None\" if end date is not \"None\"")
+        raise Exception(f"start date must not be \"None\" if end date is not \"None\" (given end date is \"{end_date}\")")
     
-    tasks = []
+    # check to make sure the end date is not before the start date (if the stat and end date are not None)
+    if(start_date != "None" and end_date != "None"):
+        start_date_dt = dt(int(start_date_matches.group(3)), int(start_date_matches.group(1)), int(start_date_matches.group(2)))
+        end_date_dt = dt(int(end_date_matches.group(3)), int(end_date_matches.group(1)), int(end_date_matches.group(2)))
+        if(end_date_dt < start_date_dt):
+            raise Exception(f"The start date ({start_date}) cannot be after the end date ({end_date})")
 
-    name_check = name.trim().upper()
-    # todo verify all the names within the backlog are not the same
-    if any(name_check == task.name.upper() for task in backlogged_tasks):
-        raise Exception("task name must not be the same of another task within backlog")
+    name_check = name.strip().upper()
+    # verify all the names within the backlog are not the same
+    for backlogged_task in backlogged_tasks:
+        if(name_check == backlogged_task.name.upper()):
+            raise Exception(f"task name must not be the same of another task within backlog (task name given \"{backlogged_task.name}\")")
     
-    # todo verify all the names within the completed task list are not the same
-    if any(name_check == task.name.upper() for task in complete_tasks):
-        raise Exception("task name must not be the same of another task within the complete task list")
+    # verify all the names within the completed task list are not the same
+    for complete_task in complete_tasks:
+        if(name_check == complete_task.name.upper()):
+            raise Exception(f"task name must not be the same of another task within the complete task list (task name given \"{complete_task.name}\")")
 
-    # todo if the current task is not None, verify that it doesn't share a name with
+    # if the current task is not None, verify that it doesn't share a name with
     if (current_task is not None and name_check == current_task.name.upper()):
-        raise Exception("task name must not be the same of current task")
+        raise Exception(f"task name must not be the same of current task \"{current_task.name}\"")
+    
+    raise('working')
 

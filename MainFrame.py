@@ -17,6 +17,7 @@ class MainFrame():
 
         # add the categories 
         # todo this is where categories would be loaded from the json
+        utils.import_data()
         for name in utils.saved_categories:
             utils.frame_list.append(CategoryFrame(name, mainframe))
 
