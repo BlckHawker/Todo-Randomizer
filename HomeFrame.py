@@ -58,10 +58,12 @@ class HomeFrame(tk.Frame):
                 utils.make_button('Select', category_frame, side='left', padx=10, command=partial(self.select_category, category_name))
                 utils.make_button('Delete', category_frame, side='left', padx=10, command=partial(self.delete_category, category_name))
 
-        utils.make_button('Add Category', self, command=self.add_category_button_press)
+        button_frame = ttk.Frame(self)
+        button_frame.pack()
+        utils.make_button('Add Category', button_frame, command=self.add_category_button_press, side="left")
+        utils.make_button('Export Data', master=button_frame, command=partial(utils.export_data), side="left")
+        utils.make_button('Import Data', master=button_frame, command=partial(utils.import_data), side="left")
         self.pack()
-
-    # todo fix a bug where the submit button does not work correctly
 
     def add_category_button_press(self):
         utils.create_pop_up_with_input(master=self, label_text="Choose the name of the new category:", button_method=self.submit_category_check)

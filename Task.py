@@ -31,3 +31,6 @@ class Task():
 
     def get_date(self, date):
         return "None" if date is None else date
+    
+    def export(self):
+        return {"name": self.name, "startDate": self.start_date, "endDate": self.end_date}

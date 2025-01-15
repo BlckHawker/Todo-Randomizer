@@ -93,3 +93,15 @@ class Category():
     
     def remove_complete_task(self, task):
         self.complete_tasks.remove(task)
+
+    def export(self):
+
+        json_backlog = [task.export() for task in self.backlogged_tasks]
+        json_complete = [task.export() for task in self.complete_tasks]
+
+        return {
+                "name": self.name, 
+                "backloggedTasks": json_backlog, 
+                "completeTasks": json_complete, 
+                "currentTask": None if self._current_task is None else self._current_task.export()
+                }
