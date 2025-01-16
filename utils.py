@@ -95,8 +95,26 @@ def import_data():
 
     # todo for each category, get the corresponding task
     for ix in range(len(result)):
-        # todo put an exception here if the key 'name' doesn't exist
+
+        # check the key 'name' exist
+        if(not 'name' in result[ix]):
+            raise Exception('the key \"name\" could not be found for a category')
+        
         name = result[ix]['name']
+
+        # check the key 'currentTask' exist
+        if(not 'currentTask' in result[ix]):
+            raise Exception(f'the key \"currentTask\" could not be found for the category named \"{name}\"')
+        
+        # check the key 'backloggedTasks' exist
+        if(not 'backloggedTasks' in result[ix]):
+            raise Exception(f'the key \"backloggedTasks\" could not be found for the category named \"{name}\"')
+        
+        # check the key 'completeTasks' exist
+        if(not 'completeTasks' in result[ix]):
+            raise Exception(f'the key \"completeTasks\" could not be found for the category named \"{name}\"')
+        
+        
 
         # verify that name is a string
         if(not isinstance(name, str)):
@@ -117,7 +135,6 @@ def import_data():
         category = Category(name.strip())
 
         # check that the current task is valid
-        # todo put an exception if the key "currentTask" doesn't exist
         current_task_dict = result[ix]['currentTask']
         if(current_task_dict is not None):
             valid_task(task=current_task_dict, current_task=None, backlogged_tasks=[], complete_tasks=[])
@@ -130,18 +147,14 @@ def import_data():
             category.current_task = None
 
         # check that the tasks in the backlog are valid
-        # todo put an exception if the key "backloggedTasks" doesn't exist
         for backlogged_task_dict in result[ix]['backloggedTasks']:
             valid_task(task=backlogged_task_dict, current_task=category.current_task, backlogged_tasks=category.backlogged_tasks, complete_tasks=[])
             task = Task(backlogged_task_dict['name'].strip())
             task.start_date = backlogged_task_dict['startDate']
             task.end_date = backlogged_task_dict['endDate']
             category.add_task_to_backlog(task)
-
-
-        # todo check that the tasks in the complete task are valid
-        # todo put an exception if the key "completeTasks" doesn't exist
-
+       
+        # check that the tasks in the complete task are valid
         for complete_task_dict in result[ix]['completeTasks']:
             valid_task(task=complete_task_dict, current_task=category.current_task, backlogged_tasks=category.backlogged_tasks, complete_tasks=category.complete_tasks)
             task = Task(complete_task_dict['name'].strip())
@@ -154,16 +167,21 @@ def import_data():
 
 # Tells if a task is valid or not
 def valid_task(task, current_task, backlogged_tasks, complete_tasks):
-    # todo verify that the key exists in the dictionary
+    # verify that the key "name" exists in the dictionary
+    if(not 'name' in task):
+        raise Exception(f'The key \"name\" could not be found for a task')
     name = task['name']
-    # # todo verify that the key exists in the dictionary
-    start_date = task['startDate']
-    # # todo verify that the key exists in the dictionary
-    end_date = task['endDate']
-    # # todo verify that the key exists in the dictionary
-    # complete_tasks = task['completeTasks']
-    # # todo verify that the key exists in the dictionary
 
+    # verify that the key "startDate" exists in the dictionary
+    if(not 'startDate' in task):
+        raise Exception(f'The key \"startDate\" could not be found for a task named \"{name}\"')
+    start_date = task['startDate']
+    
+    # verify that the key "endDate" exists in the dictionary
+    if(not 'endDate' in task):
+            raise Exception(f'The key \"endDate\" could not be found for a task named \"{name}\"')
+    end_date = task['endDate']
+    
     # the name of the task must be a string
     if(not isinstance(name, str)):
         raise Exception(f"task name must be a string (given \"{name}\")")
