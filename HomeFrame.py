@@ -101,5 +101,8 @@ class HomeFrame(tk.Frame):
     def import_data(self):
         # import the data
         utils.import_data()
-        # todo update the frame
+        # add the category frames from json
+        for name in utils.saved_categories:
+            utils.frame_list.append(CategoryFrame(name, self.parent))
+        # update the frame
         self.update_frame()
