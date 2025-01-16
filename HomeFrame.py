@@ -21,7 +21,7 @@ class HomeFrame(tk.Frame):
 
         #remove the CategoryFrame
         for frame in utils.frame_list:
-            if (isinstance(frame, CategoryFrame) and frame.category_name == category_name):
+            if (isinstance(frame, CategoryFrame) and frame.category.name == category_name):
                 frame_to_remove = frame
                 utils.frame_list.remove(frame_to_remove)
                 break
