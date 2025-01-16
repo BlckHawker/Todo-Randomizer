@@ -62,7 +62,7 @@ class HomeFrame(tk.Frame):
         button_frame.pack()
         utils.make_button('Add Category', button_frame, command=self.add_category_button_press, side="left")
         utils.make_button('Export Data', master=button_frame, command=partial(utils.export_data), side="left")
-        utils.make_button('Import Data', master=button_frame, command=partial(utils.import_data), side="left")
+        utils.make_button('Import Data', master=button_frame, command=partial(self.import_data), side="left")
         self.pack()
 
     def add_category_button_press(self):
@@ -97,3 +97,9 @@ class HomeFrame(tk.Frame):
         
         warning_label.pack()
         warning_label.config(text = warningText)
+
+    def import_data(self):
+        # import the data
+        utils.import_data()
+        # todo update the frame
+        self.update_frame()

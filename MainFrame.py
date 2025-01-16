@@ -3,6 +3,7 @@ from tkinter import ttk
 from HomeFrame import HomeFrame
 from CategoryFrame import CategoryFrame
 import utils
+
 # The window created to show a Frame to a use
 class MainFrame():
     def __init__(self, master):
@@ -15,20 +16,20 @@ class MainFrame():
         # the list of the frames to show to the user
         utils.frame_list = [self.homeFrame]
 
-        # add the categories 
+        # add the categories from json
         # todo this is where categories would be loaded from the json
-        utils.import_data()
         for name in utils.saved_categories:
             utils.frame_list.append(CategoryFrame(name, mainframe))
-
+        
         # foreach the frames in the list, forget the one that is currently not in the list
         for frame in utils.frame_list:
             if(frame != self.homeFrame):
                 frame.forget()
 
-    
-    
+        self.homeFrame.update_frame()
 
+    
+    
 #set up window
 root = tk.Tk()
 window = MainFrame(root)

@@ -2,6 +2,7 @@ import tkinter as tk
 import utils
 from Task import Task
 from Category import Category
+from CategoryFrame import CategoryFrame
 from functools import partial
 import json
 from tkinter import ttk
@@ -84,9 +85,16 @@ def import_data():
     result = json.load(file)
     file.close()
 
+    # remove all CategoryFrames from frame_list
+    for frame in utils.frame_list:
+        if(isinstance(frame, CategoryFrame)):
+            utils.frame_list.remove(frame)
+
+    # remove all categories from saved_categories
+    utils.saved_categories = {}
+
     # todo for each category, get the corresponding task
     for ix in range(len(result)):
-        print(result[ix])
         # todo put an exception here if the key 'name' doesn't exist
         name = result[ix]['name']
 
@@ -108,38 +116,39 @@ def import_data():
 
         category = Category(name.strip())
 
-        # todo check that the current task is valid
-        # todo put an exception if the key 'currentTask" doesn't exist
+        # check that the current task is valid
+        # todo put an exception if the key "currentTask" doesn't exist
         current_task_dict = result[ix]['currentTask']
         if(current_task_dict is not None):
             valid_task(task=current_task_dict, current_task=None, backlogged_tasks=[], complete_tasks=[])
-            current_task = Task(current_task_dict.name.strip())
-            current_task.start_date = current_task_dict.startDate
-            current_task.end_date = current_task_dict.endDate
+            current_task = Task(current_task_dict['name'].strip())
+            current_task.start_date = current_task_dict['startDate']
+            current_task.end_date = current_task_dict['endDate']
             category.current_task = current_task
 
         else:
             category.current_task = None
 
-        raise('working')
-
-        # todo check that the tasks in the backlog are valid
-        for backlogged_task in result[ix].backloggedTasks:
-            valid_task(name=backlogged_task.name, start_date=backlogged_task.startDate, end_date=backlogged_task.endDate, backlogged_tasks= category.backlogged_tasks, complete_tasks=category.complete_tasks, current_task=category.current_task)
-            task = Task(backlogged_task.name.strip())
-            task.start_date = backlogged_task.startDate
-            task.end_date = backlogged_task.endDate
+        # check that the tasks in the backlog are valid
+        # todo put an exception if the key "backloggedTasks" doesn't exist
+        for backlogged_task_dict in result[ix]['backloggedTasks']:
+            valid_task(task=backlogged_task_dict, current_task=category.current_task, backlogged_tasks=category.backlogged_tasks, complete_tasks=[])
+            task = Task(backlogged_task_dict['name'].strip())
+            task.start_date = backlogged_task_dict['startDate']
+            task.end_date = backlogged_task_dict['endDate']
             category.add_task_to_backlog(task)
 
+
         # todo check that the tasks in the complete task are valid
-        for complete_task in result[ix].completeTasks:
-            valid_task(name=complete_task.name, start_date=complete_task.startDate, end_date=complete_task.endDate, backlogged_tasks= category.backlogged_tasks, complete_tasks=category.complete_tasks, current_task=category.current_task)
-            task = Task(complete_task.name.strip())
-            task.start_date = complete_task.startDate
-            task.end_date = complete_task.endDate
-            category.complete_tasks.append(task)
-        
-        # todo test this
+        # todo put an exception if the key "completeTasks" doesn't exist
+
+        for complete_task_dict in result[ix]['completeTasks']:
+            valid_task(task=complete_task_dict, current_task=category.current_task, backlogged_tasks=category.backlogged_tasks, complete_tasks=category.complete_tasks)
+            task = Task(complete_task_dict['name'].strip())
+            task.start_date = complete_task_dict['startDate']
+            task.end_date = complete_task_dict['endDate']
+
+        # add the new category to the list of saved categories
         utils.saved_categories.update({category.name: category})
 
 
@@ -207,6 +216,4 @@ def valid_task(task, current_task, backlogged_tasks, complete_tasks):
     # if the current task is not None, verify that it doesn't share a name with
     if (current_task is not None and name_check == current_task.name.upper()):
         raise Exception(f"task name must not be the same of current task \"{current_task.name}\"")
-    
-    raise('working')
 
